@@ -1,0 +1,22 @@
+{
+  "name": "audiobook-shelf-ingest",
+  "version": "1.0.0",
+  "description": "Local CLI to decrypt Audible AAX/AAXC files and ingest plain mp3/m4b audiobooks into the Audiobook Shelf Drive library.",
+  "type": "module",
+  "bin": {
+    "ingest-aax": "./src/ingest-aax.js",
+    "ingest-plain": "./src/ingest-plain.js"
+  },
+  "scripts": {
+    "ingest-aax": "node src/ingest-aax.js",
+    "ingest-plain": "node src/ingest-plain.js"
+  },
+  "dependencies": {
+    "googleapis": "^144.0.0",
+    "open": "^10.1.0",
+    "uuid": "^9.0.1"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,5 @@
+node_modules/
+ingest/credentials.json
+ingest/.token.json
+ingest/out/
+.DS_Store
