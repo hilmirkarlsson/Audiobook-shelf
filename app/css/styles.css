@@ -2,9 +2,11 @@
   color-scheme: dark;
   --bg: #121214;
   --surface: #1c1c20;
+  --surface-2: #25252b;
   --text: #f2f2f4;
   --muted: #9a9aa2;
   --accent: #6c8cff;
+  --border: #2a2a2f;
 }
 
 * { box-sizing: border-box; }
@@ -16,12 +18,18 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
+.hidden { display: none !important; }
+
 .topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.25rem;
-  border-bottom: 1px solid #2a2a2f;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 10;
 }
 
 .topbar h1 {
@@ -45,4 +53,237 @@ button {
   color: var(--muted);
   font-size: 0.9rem;
   white-space: pre-wrap;
+}
+
+/* Library */
+
+.library-toolbar {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem 1.25rem;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 160px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.95rem;
+}
+
+select {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem 0.5rem;
+  font-size: 0.9rem;
+}
+
+.library-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  padding: 0 1.25rem 2rem;
+}
+
+@media (min-width: 640px) {
+  .library-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .library-grid { grid-template-columns: repeat(6, 1fr); }
+}
+
+.book-card {
+  background: none;
+  border: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 0.4rem;
+  cursor: pointer;
+}
+
+.book-cover {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 10px;
+  background: var(--surface-2);
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  font-size: 2rem;
+  color: var(--muted);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.15s ease;
+}
+
+.book-card:hover .book-cover {
+  transform: scale(1.02);
+}
+
+.progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+}
+
+.progress-bar.finished .progress-fill {
+  background: #4caf6e;
+}
+
+.book-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.book-author {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.empty-state {
+  padding: 2rem 1.25rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* Player */
+
+#player-view {
+  padding: 1.25rem;
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.back-btn {
+  align-self: flex-start;
+  background: none;
+  color: var(--muted);
+  padding: 0.25rem 0;
+}
+
+.player-cover {
+  width: min(70vw, 320px);
+  aspect-ratio: 1;
+  border-radius: 16px;
+  background: var(--surface-2);
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+#player-title {
+  margin: 0.25rem 0 0;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.player-author {
+  margin: 0;
+  color: var(--muted);
+  text-align: center;
+}
+
+.scrubber-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.scrubber-row span {
+  font-size: 0.75rem;
+  color: var(--muted);
+  min-width: 3.2em;
+  text-align: center;
+}
+
+#scrubber {
+  flex: 1;
+  accent-color: var(--accent);
+}
+
+.controls-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.controls-row button {
+  background: var(--surface-2);
+  font-size: 0.85rem;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+}
+
+.play-btn {
+  background: var(--accent);
+  width: 72px !important;
+  height: 72px !important;
+  font-size: 1.5rem !important;
+}
+
+.settings-row {
+  display: flex;
+  gap: 1.5rem;
+  width: 100%;
+  justify-content: center;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.settings-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.chapter-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.chapter-item {
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.chapter-item.active {
+  background: var(--accent);
 }

@@ -12,7 +12,57 @@
       <h1>Audiobook Shelf</h1>
       <button id="auth-btn">Sign in with Google</button>
     </header>
+
     <main id="status"></main>
+
+    <section id="library-view" class="hidden"></section>
+
+    <section id="player-view" class="hidden">
+      <button id="back-btn" class="back-btn">&larr; Library</button>
+      <div id="player-cover" class="player-cover"></div>
+      <h2 id="player-title"></h2>
+      <p id="player-author" class="player-author"></p>
+
+      <div class="scrubber-row">
+        <span id="current-time">0:00</span>
+        <input type="range" id="scrubber" value="0" min="0" max="100" step="1" />
+        <span id="total-time">0:00</span>
+      </div>
+
+      <div class="controls-row">
+        <button id="skip-back-btn" title="Back 15s">&#x21BA; 15</button>
+        <button id="play-btn" class="play-btn">&#9658;</button>
+        <button id="skip-forward-btn" title="Forward 30s">30 &#x21BB;</button>
+      </div>
+
+      <div class="settings-row">
+        <label>
+          Speed
+          <select id="speed-select">
+            <option value="0.8">0.8x</option>
+            <option value="1" selected>1x</option>
+            <option value="1.25">1.25x</option>
+            <option value="1.5">1.5x</option>
+            <option value="2">2x</option>
+            <option value="2.5">2.5x</option>
+            <option value="3">3x</option>
+          </select>
+        </label>
+        <label>
+          Sleep timer (<span id="sleep-label">Off</span>)
+          <select id="sleep-select">
+            <option value="0">Off</option>
+            <option value="10">10 min</option>
+            <option value="20">20 min</option>
+            <option value="30">30 min</option>
+            <option value="45">45 min</option>
+            <option value="60">60 min</option>
+          </select>
+        </label>
+      </div>
+
+      <div id="chapter-list" class="chapter-list hidden"></div>
+    </section>
   </div>
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
