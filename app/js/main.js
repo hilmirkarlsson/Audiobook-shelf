@@ -16,6 +16,7 @@ let libraryFileId = null;
 
 const playerEls = {
   cover: document.getElementById('player-cover'),
+  backdrop: document.getElementById('player-backdrop'),
   title: document.getElementById('player-title'),
   author: document.getElementById('player-author'),
   scrubber: document.getElementById('scrubber'),

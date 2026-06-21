@@ -158,10 +158,10 @@ export function initPlayer(elements) {
     highlightActiveChapter();
   });
   audio.addEventListener('play', () => {
-    els.playBtn.textContent = '⏸';
+    els.playBtn.classList.add('is-playing');
   });
   audio.addEventListener('pause', () => {
-    els.playBtn.textContent = '▶';
+    els.playBtn.classList.remove('is-playing');
     persistProgress();
     sync.flushNow();
   });
@@ -219,6 +219,7 @@ export async function openPlayer(book, progressEntry) {
   els.title.textContent = book.title;
   els.author.textContent = book.author;
   els.cover.style.backgroundImage = book.coverUrl ? `url(${book.coverUrl})` : '';
+  if (els.backdrop) els.backdrop.style.backgroundImage = book.coverUrl ? `url(${book.coverUrl})` : '';
 
   renderChapters();
   setupMediaSession(book);

@@ -4,13 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Audiobook Shelf</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
   <div id="app">
     <header class="topbar">
-      <h1>Audiobook Shelf</h1>
-      <button id="auth-btn">Sign in with Google</button>
+      <div class="brand">
+        <span class="brand-mark">&#127911;</span>
+        <h1>Shelf</h1>
+      </div>
+      <button id="auth-btn" class="ghost-btn">Sign in with Google</button>
     </header>
 
     <main id="status"></main>
@@ -18,50 +24,71 @@
     <section id="library-view" class="hidden"></section>
 
     <section id="player-view" class="hidden">
-      <button id="back-btn" class="back-btn">&larr; Library</button>
-      <div id="player-cover" class="player-cover"></div>
-      <h2 id="player-title"></h2>
-      <p id="player-author" class="player-author"></p>
+      <div id="player-backdrop" class="player-backdrop"></div>
+      <div class="player-content">
+        <button id="back-btn" class="back-btn" aria-label="Back to library">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M15.5 4.5 7 12l8.5 7.5 1.4-1.6L10.2 12l6.7-5.9z"/></svg>
+          <span>Library</span>
+        </button>
 
-      <div class="scrubber-row">
-        <span id="current-time">0:00</span>
-        <input type="range" id="scrubber" value="0" min="0" max="100" step="1" />
-        <span id="total-time">0:00</span>
+        <div id="player-cover" class="player-cover"></div>
+
+        <div class="player-meta">
+          <h2 id="player-title"></h2>
+          <p id="player-author" class="player-author"></p>
+        </div>
+
+        <div class="scrubber-row">
+          <input type="range" id="scrubber" value="0" min="0" max="100" step="1" />
+          <div class="time-row">
+            <span id="current-time">0:00</span>
+            <span id="total-time">0:00</span>
+          </div>
+        </div>
+
+        <div class="controls-row">
+          <button id="skip-back-btn" class="icon-btn" title="Back 15s">
+            <svg viewBox="0 0 24 24" width="26" height="26"><path fill="currentColor" d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+            <span class="badge">15</span>
+          </button>
+          <button id="play-btn" class="play-btn" aria-label="Play/Pause">
+            <svg class="icon-play" viewBox="0 0 24 24" width="30" height="30"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+            <svg class="icon-pause hidden" viewBox="0 0 24 24" width="30" height="30"><path fill="currentColor" d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>
+          </button>
+          <button id="skip-forward-btn" class="icon-btn" title="Forward 30s">
+            <svg viewBox="0 0 24 24" width="26" height="26"><path fill="currentColor" d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/></svg>
+            <span class="badge">30</span>
+          </button>
+        </div>
+
+        <div class="settings-row">
+          <label class="pill-select">
+            <span class="pill-select-label">Speed</span>
+            <select id="speed-select">
+              <option value="0.8">0.8x</option>
+              <option value="1" selected>1x</option>
+              <option value="1.25">1.25x</option>
+              <option value="1.5">1.5x</option>
+              <option value="2">2x</option>
+              <option value="2.5">2.5x</option>
+              <option value="3">3x</option>
+            </select>
+          </label>
+          <label class="pill-select">
+            <span class="pill-select-label">Sleep &middot; <span id="sleep-label">Off</span></span>
+            <select id="sleep-select">
+              <option value="0">Off</option>
+              <option value="10">10 min</option>
+              <option value="20">20 min</option>
+              <option value="30">30 min</option>
+              <option value="45">45 min</option>
+              <option value="60">60 min</option>
+            </select>
+          </label>
+        </div>
+
+        <div id="chapter-list" class="chapter-list hidden"></div>
       </div>
-
-      <div class="controls-row">
-        <button id="skip-back-btn" title="Back 15s">&#x21BA; 15</button>
-        <button id="play-btn" class="play-btn">&#9658;</button>
-        <button id="skip-forward-btn" title="Forward 30s">30 &#x21BB;</button>
-      </div>
-
-      <div class="settings-row">
-        <label>
-          Speed
-          <select id="speed-select">
-            <option value="0.8">0.8x</option>
-            <option value="1" selected>1x</option>
-            <option value="1.25">1.25x</option>
-            <option value="1.5">1.5x</option>
-            <option value="2">2x</option>
-            <option value="2.5">2.5x</option>
-            <option value="3">3x</option>
-          </select>
-        </label>
-        <label>
-          Sleep timer (<span id="sleep-label">Off</span>)
-          <select id="sleep-select">
-            <option value="0">Off</option>
-            <option value="10">10 min</option>
-            <option value="20">20 min</option>
-            <option value="30">30 min</option>
-            <option value="45">45 min</option>
-            <option value="60">60 min</option>
-          </select>
-        </label>
-      </div>
-
-      <div id="chapter-list" class="chapter-list hidden"></div>
     </section>
   </div>
 
