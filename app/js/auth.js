@@ -26,8 +26,36 @@ function storeToken(tokenResponse) {
   return token;
 }
 
-export function initAuth({ onChange }) {
+// The Google Identity Services <script> tag loads with `async`, so on a slow
+// connection it can still be in flight when initAuth runs; poll rather than
+// assume `google` is already defined.
+function waitForGoogleIdentity(timeoutMs = 15000) {
+  return new Promise((resolve, reject) => {
+    if (window.google?.accounts?.oauth2) return resolve();
+    const start = Date.now();
+    const iv = setInterval(() => {
+      if (window.google?.accounts?.oauth2) {
+        clearInterval(iv);
+        resolve();
+      } else if (Date.now() - start > timeoutMs) {
+        clearInterval(iv);
+        reject(new Error('Google sign-in failed to load. Check your connection and reload.'));
+      }
+    }, 100);
+  });
+}
+
+export async function initAuth({ onChange, onError }) {
   onAuthChange = onChange || onAuthChange;
+
+  try {
+    await waitForGoogleIdentity();
+  } catch (err) {
+    console.error(err);
+    if (onError) onError(err);
+    return;
+  }
+
   tokenClient = google.accounts.oauth2.initTokenClient({
     client_id: CONFIG.GOOGLE_CLIENT_ID,
     scope: CONFIG.DRIVE_SCOPE,
@@ -47,6 +75,10 @@ export function initAuth({ onChange }) {
 }
 
 export function signIn() {
+  if (!tokenClient) {
+    console.error('signIn called before Google Identity Services finished loading');
+    return;
+  }
   // 'consent' only needed first time; '' lets Google skip the prompt on repeat visits.
   tokenClient.requestAccessToken({ prompt: '' });
 }

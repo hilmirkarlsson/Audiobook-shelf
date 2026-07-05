@@ -101,5 +101,13 @@ authBtn.addEventListener('click', () => {
 });
 
 window.addEventListener('load', () => {
-  initAuth({ onChange: updateAuthUI });
+  initAuth({
+    onChange: updateAuthUI,
+    onError: (err) => {
+      authBtn.disabled = true;
+      setStatus(`${err.message} (tap to retry)`);
+      statusEl.style.cursor = 'pointer';
+      statusEl.addEventListener('click', () => window.location.reload(), { once: true });
+    },
+  });
 });
