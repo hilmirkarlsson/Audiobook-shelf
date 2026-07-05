@@ -112,5 +112,6 @@ export async function downloadFile(fileId) {
 
 export function getFileStreamUrl(fileId) {
   const token = getAccessToken();
+  if (!token) throw new Error('Not signed in to Drive');
   return `${API_BASE}/files/${fileId}?alt=media&access_token=${token.accessToken}`;
 }

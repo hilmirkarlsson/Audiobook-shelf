@@ -45,8 +45,23 @@ function showLibrary() {
 async function showPlayer(book) {
   libraryView.classList.add('hidden');
   playerView.classList.remove('hidden');
-  const progress = await sync.getProgress(book.id);
-  await openPlayer(book, progress);
+
+  let progress = null;
+  try {
+    progress = await sync.getProgress(book.id);
+  } catch (err) {
+    // Don't let a failed progress fetch (expired token, network hiccup) block
+    // playback entirely — worst case we resume from the start instead of
+    // wherever the user last left off.
+    console.error('Failed to load saved progress, starting from the beginning', err);
+  }
+
+  try {
+    await openPlayer(book, progress);
+  } catch (err) {
+    console.error('Failed to open player', err);
+    setStatus(`Couldn't play "${book.title}": ${err.message}`);
+  }
 }
 
 backBtn.addEventListener('click', showLibrary);
@@ -101,5 +116,13 @@ authBtn.addEventListener('click', () => {
 });
 
 window.addEventListener('load', () => {
-  initAuth({ onChange: updateAuthUI });
+  initAuth({
+    onChange: updateAuthUI,
+    onError: (err) => {
+      authBtn.disabled = true;
+      setStatus(`${err.message} (tap to retry)`);
+      statusEl.style.cursor = 'pointer';
+      statusEl.addEventListener('click', () => window.location.reload(), { once: true });
+    },
+  });
 });
