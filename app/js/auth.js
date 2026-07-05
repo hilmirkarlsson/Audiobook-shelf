@@ -4,6 +4,23 @@ const TOKEN_STORAGE_KEY = 'gdrive_token';
 
 let tokenClient = null;
 let onAuthChange = () => {};
+let refreshTimer = null;
+
+// Audiobooks routinely run past the ~1hr Drive access-token lifetime, and the
+// audio element's src has the token baked into its query string. Without a
+// proactive silent refresh, playback (and any Drive call) just starts
+// failing partway through a book with no user-visible cause. Refresh a few
+// minutes before our recorded expiry (which itself is already 60s early)
+// rather than waiting for something to fail.
+const REFRESH_LEAD_MS = 3 * 60 * 1000;
+
+function scheduleRefresh(token) {
+  clearTimeout(refreshTimer);
+  const delay = Math.max(5000, token.expiresAt - Date.now() - REFRESH_LEAD_MS);
+  refreshTimer = setTimeout(() => {
+    if (tokenClient) tokenClient.requestAccessToken({ prompt: '' });
+  }, delay);
+}
 
 function loadStoredToken() {
   const raw = localStorage.getItem(TOKEN_STORAGE_KEY);
@@ -23,6 +40,7 @@ function storeToken(tokenResponse) {
     expiresAt: Date.now() + (tokenResponse.expires_in - 60) * 1000,
   };
   localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify(token));
+  scheduleRefresh(token);
   return token;
 }
 
@@ -71,7 +89,10 @@ export async function initAuth({ onChange, onError }) {
   });
 
   const existing = loadStoredToken();
-  if (existing) onAuthChange(existing);
+  if (existing) {
+    scheduleRefresh(existing);
+    onAuthChange(existing);
+  }
 }
 
 export function signIn() {
@@ -84,6 +105,7 @@ export function signIn() {
 }
 
 export function signOut() {
+  clearTimeout(refreshTimer);
   const token = loadStoredToken();
   localStorage.removeItem(TOKEN_STORAGE_KEY);
   if (token) {
@@ -98,5 +120,9 @@ export function getAccessToken() {
 
 // Called when a Drive API call gets a 401: token expired/revoked unexpectedly.
 export function requestFreshToken() {
+  if (!tokenClient) {
+    console.error('requestFreshToken called before Google Identity Services finished loading');
+    return;
+  }
   tokenClient.requestAccessToken({ prompt: '' });
 }
